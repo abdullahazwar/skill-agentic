@@ -25,13 +25,7 @@ Cron selalu memicu jadwal yang terpasang meskipun tabel kosong. DO alarm hanya d
 
 Cron Cloudflare menggunakan UTC. Simpan waktu sebagai timestamp UTC dan zona IANA, misalnya Asia/Jakarta. Pukul 21.00 WIB sama dengan 14.00 UTC. Jangan menerapkan offset WIB ke semua pengguna.
 
-    {
-      "triggers": {
-        "crons": ["0 14 * * *"]
-      }
-    }
-
-Contoh itu untuk validasi malam setiap hari, bukan pengingat jam bebas. Pengingat menit tertentu membutuhkan scheduler yang sesuai. Jangan menurunkan frekuensi cron hingga melewati toleransi keterlambatan yang diminta.
+Jadwal harian tetap berbeda dari pengingat jam bebas. Pengingat menit tertentu membutuhkan scheduler yang sesuai. Jangan menurunkan frekuensi cron hingga melewati toleransi keterlambatan yang diminta.
 
 Untuk jadwal kuliah mingguan, simpan hari, waktu mulai/selesai, dosen dan zona. Validasi kehadiran dosen pada occurrence besok, bukan mematikan seluruh matkul selamanya. Hubungkan tugas kelompok lewat course_id, dengan konfirmasi jika nama matkul ambigu.
 
@@ -44,12 +38,7 @@ Untuk jadwal kuliah mingguan, simpan hari, waktu mulai/selesai, dosen dan zona. 
 5. Kerjakan hanya pekerjaan yang berhasil diklaim.
 6. Catat hasil dan waktu berikutnya.
 
-    SELECT id FROM reminder_jobs
-    WHERE status = 'pending' AND next_attempt_at <= ?
-    ORDER BY next_attempt_at
-    LIMIT 50;
-
-Angka 50 ialah ukuran batch contoh, bukan batas platform. Pantau backlog dan sesuaikan.
+Pilih ukuran batch menurut backlog, durasi dan batas platform; jangan menganggap satu angka cocok untuk semua aplikasi.
 
 ## Claim dan retry
 
@@ -70,9 +59,6 @@ Untuk Workflows, buat step yang dapat diulang dengan aman. Jangan mengulang side
 Untuk DO, ikuti pola class resmi dan migrasi new_sqlite_classes yang berlaku. Pakai class extends DurableObject. Uji alarm ganda, recovery dan object eviction. WebSocket hibernation berguna pada koneksi realtime yang lama idle.
 
 ## Uji jadwal
-
-    npx wrangler dev --test-scheduled
-    curl "http://localhost:8787/__scheduled"
 
 Uji kosong, due, not-yet-due, cron tumpang tindih, lease habis, provider timeout dan pembatalan. Jangan memicu pengingat produksi untuk sekadar test.
 

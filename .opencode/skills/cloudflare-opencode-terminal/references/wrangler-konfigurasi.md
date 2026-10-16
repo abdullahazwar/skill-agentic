@@ -1,105 +1,37 @@
-# Wrangler dan konfigurasi
+# Wrangler, binding dan environment
 
-## Isi
+## Memahami proyek
 
-- Dasar proyek
-- Binding dan environment
-- Secret
-- Perintah operasi
-- Validasi
+Gunakan Wrangler lokal dari toolchain proyek dan periksa dokumentasi versi terpasang. Pertahankan format konfigurasi proyek yang sudah berfungsi. Paket skill ini tidak menyediakan atau menerbitkan konfigurasi.
 
-## Dasar proyek
+Identifikasi entrypoint, nama aplikasi, tanggal kompatibilitas dan cara build secara privat di repo aplikasi. Jangan memperbarui tanggal/flag kompatibilitas tanpa menguji perilaku lama.
 
-Gunakan Wrangler lokal yang dikunci lockfile. Pakai npx wrangler agar versi konsisten. Periksa help versi terpasang sebelum memakai subcommand baru.
+## Binding
 
-Preferensikan wrangler.jsonc pada proyek baru. Pertahankan TOML proyek lama bila berfungsi. Jangan membuat dua konfigurasi yang berbeda.
+Binding menghubungkan kode Worker dengan resource. Nama binding, nama tampilan resource dan ID adalah hal berbeda. Nama binding harus cocok dengan yang dipakai aplikasi. Jangan mengganti resource berisi data dengan resource kosong untuk menyelesaikan error penamaan.
 
-    {
-      "$schema": "./node_modules/wrangler/config-schema.json",
-      "name": "aplikasi-contoh",
-      "main": "src/index.ts",
-      "compatibility_date": "2026-10-16",
-      "workers_dev": true,
-      "vars": { "APP_ENV": "development" },
-      "observability": { "enabled": true }
-    }
+Tentukan resource yang memang diperlukan. D1 untuk data relasional, KV untuk data yang boleh stale, dan R2 untuk object. Generate/periksa tipe lingkungan sesuai toolchain aplikasi setelah binding berubah.
 
-Ganti tanggal contoh dengan tanggal pembuatan. Jangan menambah compatibility_flags tanpa kebutuhan. Generate tipe setelah binding berubah.
+## Environment
 
-    npx wrangler types
-    npx tsc --noEmit
+Bedakan pengembangan lokal, preview, staging dan produksi. Banyak binding serta variabel memerlukan deklarasi khusus per environment. Periksa aturan pewarisan pada schema/dokumentasi saat itu, bukan menganggap semua otomatis diwariskan.
 
-## Binding dan environment
+Gunakan target environment konsisten untuk pengujian, migrasi, secret, build, log dan deploy. Pisahkan resource staging dari produksi bila tugas memerlukannya.
 
-Nama binding case-sensitive. ID berbeda dari nama tampilan. Ambil ID dari hasil create/list atau dashboard akun yang tepat.
+## Rahasia
 
-    {
-      "d1_databases": [{
-        "binding": "DB",
-        "database_name": "aplikasi-db",
-        "database_id": "<ID-DATABASE>",
-        "migrations_dir": "migrations"
-      }],
-      "kv_namespaces": [{ "binding": "CACHE", "id": "<ID-KV>" }],
-      "r2_buckets": [{ "binding": "FILES", "bucket_name": "aplikasi-files" }]
-    }
+Pisahkan variabel publik/non-secret dari secret. Isi nilai rahasia melalui antarmuka aman yang resmi. Jangan memasukkan nilainya ke file distribusi skill, argumen terminal, log, URL, commit atau percakapan.
 
-Gabungkan fragmen ke config proyek. Tambah hanya resource yang perlu. Jangan mengganti resource lama dengan resource kosong tanpa kebutuhan.
+Akses binding aplikasi berbeda dari credential administrasi akun. Jangan memasang token administrasi ke frontend atau mengirimkannya pada setiap operasi data Worker.
 
-Gunakan env.staging dan env.production sesuai proyek. Banyak binding dan vars tidak diwariskan. Deklarasikan ulang pada environment tujuan dan periksa schema Wrangler terkini.
+## Validasi sebelum operasi nyata
 
-Gunakan --env yang sama pada types, migration, secret, dry-run, tail dan deploy untuk named environment. Pisahkan database, namespace dan bucket staging dari produksi.
-
-## Secret
-
-Simpan non-secret pada vars. Simpan rahasia lokal pada .dev.vars atau env lokal yang didukung. Jangan commit .dev.vars, .env, file token dan backup pelanggan.
-
-    npx wrangler secret put TELEGRAM_BOT_TOKEN
-    npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
-    npx wrangler secret list
-
-Put meminta nilai lewat input. List memeriksa nama secret. Tambahkan --env production jika itu target konfigurasi. Jangan menaruh nilai secret sebagai argumen CLI.
-
-| Nama | Pemakaian |
-| --- | --- |
-| TELEGRAM_BOT_TOKEN | Token BotFather |
-| TELEGRAM_WEBHOOK_SECRET | Nilai acak untuk header webhook |
-| TURNSTILE_SECRET_KEY | Verifikasi Turnstile backend |
-| QWEN_API_KEY | Key provider Qwen |
-| DEEPSEEK_API_KEY | Key provider DeepSeek |
-| SESSION_SIGNING_SECRET | Penandatangan sesi bila diperlukan |
-| CLOUDFLARE_API_TOKEN | Administrasi/CI, bukan akses binding aplikasi |
-
-Webhook secret bukan API key yang dibeli. Generate dengan sumber acak kriptografi. Nonaktifkan setup endpoint atau rotasi secret bootstrap setelah dipakai.
-
-## Perintah operasi
-
-    npx wrangler whoami
-    npx wrangler dev
-    npx wrangler deploy --dry-run
-    npx wrangler deploy
-    npx wrangler tail
-    npx wrangler kv namespace create CACHE
-    npx wrangler d1 create aplikasi-db
-    npx wrangler r2 bucket create aplikasi-files
-    npx wrangler d1 migrations create aplikasi-db initial
-    npx wrangler d1 migrations apply aplikasi-db --local
-    npx wrangler d1 migrations apply aplikasi-db --remote
-    npx wrangler d1 export aplikasi-db --remote --output backup.sql
-    npx wrangler deployments list
-    npx wrangler versions list
-
-Create, migration remote, deploy dan secret put mengubah state. Jalankan pada target yang ditentukan. Ekspor mengandung data dan perlu disimpan privat.
-
-## Validasi
-
-1. Periksa akun, Worker, environment, route dan ID binding.
-2. Pastikan assets berisi hasil build dan tidak memuat rahasia.
-3. Generate tipe, typecheck, test lalu dry-run.
-4. Baca warning dan perubahan trigger/route.
-5. Ingat dry-run tidak memverifikasi secret remote, DNS atau izin akun.
-
-Dokumentasi CLI dapat berubah. Jangan menerapkan sintaks cf CLI pada proyek Wrangler atau memigrasikan CLI saat perbaikan tanpa kebutuhan.
+1. Pastikan pengguna memang meminta pekerjaan aplikasi/akun.
+2. Verifikasi target secara privat dan tinjau perubahan terkecil.
+3. Periksa tipe, test, build serta simulasi publikasi sesuai proyek.
+4. Baca warning tentang route, trigger, binding dan environment.
+5. Ingat simulasi lokal tidak membuktikan izin, secret, DNS atau resource remote.
+6. Setelah operasi yang diizinkan, verifikasi hasil nyata dan laporkan bukti tanpa identitas sensitif.
 
 Sumber: https://developers.cloudflare.com/workers/wrangler/configuration/
 Sumber: https://developers.cloudflare.com/workers/wrangler/commands/

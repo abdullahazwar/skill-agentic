@@ -16,12 +16,7 @@ Gunakan object key acak dengan prefix tenant, misalnya users/123/menu/uuid.webp.
 6. Jika update D1 gagal, jadwalkan cleanup object baru.
 7. Jika mengganti foto, hapus foto lama setelah relasi baru berhasil disimpan.
 
-Contoh operasi binding, dengan validatedStream dan validatedMime hasil pemeriksaan:
-
-    await env.FILES.put(objectKey, validatedStream, {
-      httpMetadata: { contentType: validatedMime }
-    });
-    const object = await env.FILES.get(objectKey);
+Operasi binding hanya menerima stream dan metadata yang sudah divalidasi.
 
 Jangan mem-buffer file besar tanpa batas. Gunakan mekanisme multipart untuk file besar bila diperlukan dan periksa batas terkini.
 
@@ -41,10 +36,6 @@ Saat menyajikan object, teruskan metadata, ETag dan ukuran yang sesuai. Tangani 
 Untuk foto menu yang diperbarui, gunakan key/version baru agar cache lama tidak membuat gambar tampak tidak berubah. Lazy-load gambar katalog dan tentukan dimensi agar layout tidak meloncat.
 
 ## Operasi
-
-    npx wrangler r2 bucket create aplikasi-files
-    npx wrangler r2 object put aplikasi-files/contoh.txt --file ./contoh.txt --remote
-    npx wrangler r2 object get aplikasi-files/contoh.txt --remote
 
 Periksa help sebelum pemakaian dan target lokal/remote. Jangan mengunggah data nyata ke bucket contoh.
 

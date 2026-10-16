@@ -1,87 +1,41 @@
 # GitHub, CI/CD dan deployment
 
-## Isi
+## Distribusi panduan
 
-- Target repo dan perlindungan kode
-- Validasi
-- Deploy manual dan otomatis
-- Rollback
-- Distribusi skill
+Repo paket skill hanya berisi Markdown. Jangan menambahkan script, workflow, config, kode contoh aplikasi, credential, identitas akun, atau data produksi. Mem-push panduan tidak memberi izin mengubah aplikasi Cloudflare.
 
-## Target repo
+Baca aturan repo, branch, remote dan perubahan pengguna. Stage file yang memang terkait. Tinjau diff sebelum commit, lalu verifikasi branch remote setelah push. Jangan force-push, menghapus branch atau mengikutkan pekerjaan lain tanpa scope.
 
-Temukan identitas akun dan repo lewat integrasi yang aktif. Jika pengguna memberi nama repo baru, pertahankan nama persis. Jangan mengganti target dengan repo lain hanya karena aksesnya tersedia.
+## Aplikasi yang terpisah
 
-Untuk repo baru dengan audience tidak ditentukan, preferensikan privat. Jangan mempublikasikan data, token atau kode pribadi tanpa instruksi. Jika alat tidak bisa membuat repo, selesaikan commit lokal lalu jelaskan kemampuan yang kurang. Gunakan kemampuan resmi yang tersedia dan hormati aturan fallback lingkungan.
+Panduan ini menjelaskan proses jika pengguna kelak meminta implementasi/deploy di repo aplikasi. Baca perintah build dan test proyek terlebih dahulu. Jalankan pemeriksaan tipe/perilaku/runtime yang sesuai. Test unit tidak membuktikan seluruh binding dan routing platform.
 
-Baca AGENTS.md dan status branch. Jangan force-push, menghapus branch atau mengikutkan perubahan pengguna yang tidak berkaitan. Stage file spesifik. Periksa diff staged sebelum commit.
+Jangan menjalankan script repo tak tepercaya dengan akses credential produksi. Jangan menyalin file konfigurasi akun dari aplikasi ke repo skill.
 
-    git status --short --branch
-    git diff
-    git add path-yang-diubah
-    git diff --cached --stat
-    git diff --cached
-    git commit -m "Perbaiki alur yang diminta"
-    git push origin nama-branch
+## Deployment yang diminta
 
-Nama branch dan remote harus berasal dari repo nyata. Gunakan identitas git yang sah dari lingkungan, bukan identitas orang lain.
+1. Tentukan target akun, aplikasi dan environment secara privat.
+2. Periksa resource, secret, migrasi dan jalur pemulihan.
+3. Uji perubahan lokal atau staging.
+4. Terapkan migrasi kompatibel jika memang diperlukan dan diizinkan.
+5. Publikasikan versi yang sudah diuji.
+6. Periksa health, route, login dan alur utama sesuai scope.
+7. Laporkan versi/commit serta hasil yang benar-benar terverifikasi tanpa membagikan data akun privat.
 
-## Validasi
+Jangan mengirim transaksi atau pesan produksi sebagai smoke test kecuali termasuk izin tugas.
 
-Urutan proyek npm dengan lockfile:
+## CI/CD sebagai rancangan
 
-    npm ci
-    npm run types
-    npm run check
-    npm test
-    npm run build
+Jika pengguna hanya meminta panduan, jelaskan pilihan Workers Builds atau GitHub Actions secara tertulis. Jangan membuat atau mengaktifkan pipeline. Pada pekerjaan aplikasi yang diizinkan, pilih satu jalur utama agar deployment tidak saling menimpa.
 
-Sesuaikan script dengan proyek. Build starter ialah dry-run Wrangler. Typecheck tidak menggantikan pengujian bisnis. Test Node tidak menggantikan integrasi binding/runtime.
-
-Jangan menjalankan script package yang belum ditinjau dari repo tidak tepercaya dengan akses secret produksi.
-
-## Deploy manual
-
-1. Verifikasi akun, Worker dan environment.
-2. Pastikan resource, migrasi dan secret siap.
-3. Jalankan migrasi backward-compatible jika perubahan memerlukannya.
-4. Deploy state sumber yang telah diuji.
-5. Catat version/deployment ID dan commit.
-6. Uji health, login, API, webhook dan alur utama.
-
-Deploy berhasil secara API belum membuktikan aplikasi berfungsi. Jangan mengirim transaksi nyata sebagai smoke test tanpa izin yang mencakupnya.
-
-## Deploy otomatis
-
-Pilih satu sistem utama: Workers Builds atau GitHub Actions. Hindari dua pipeline menerbitkan Worker yang sama secara bersamaan.
-
-Untuk Workers Builds, periksa repo/branch, root directory, install/build/deploy command, secret dan keterkaitan Worker.
-
-Untuk Actions, gunakan asset deploy-worker.yml.example pada repo aplikasi. File example tidak aktif sebelum disalin ke .github/workflows dengan ekstensi yml. Template memakai workflow_dispatch sehingga push skill tidak memicu deploy aplikasi.
-
-Simpan CLOUDFLARE_API_TOKEN dan CLOUDFLARE_ACCOUNT_ID pada GitHub Actions secrets sesuai kebutuhan. Batasi izin token. Gunakan environment GitHub untuk produksi jika memerlukan aturan deployment.
-
-Gunakan permissions: contents: read dan concurrency agar deploy tidak saling menimpa. Jangan mengirim secret ke workflow PR dari fork. Pin action ke versi/commit yang ditinjau sesuai kebijakan repo.
-
-Migrations perlu langkah tersendiri yang eksplisit. Pipeline tidak boleh otomatis memulihkan backup database atau menghapus resource.
+Credential CI disimpan pada penyimpanan secret resmi, memiliki scope minimal, dan tidak disertakan dalam repo. Perubahan environment produksi dan akses fork perlu ditinjau sesuai kebijakan proyek.
 
 ## Rollback
 
-    npx wrangler deployments list
-    npx wrangler versions list
-    npx wrangler rollback <VERSION-ID>
+Bedakan rollback kode dari pemulihan data. Rollback Worker tidak membatalkan perubahan D1, KV, R2, secret atau layanan luar. Pastikan versi lama masih cocok dengan skema. Gunakan perluasan skema, migrasi, lalu penghapusan terencana untuk perubahan besar.
 
-Periksa sintaks help dan target environment. Gunakan ID yang benar dari hasil alat. Rollback kode tidak membatalkan perubahan D1, R2, KV, secret atau layanan luar. Pastikan kode lama kompatibel dengan skema baru.
-
-Untuk perubahan schema berisiko, gunakan expand, migrate, contract. Penundaan penghapusan kolom memberi jalur rollback yang lebih aman.
-
-## Distribusi skill
-
-Repo skill memuat folder cloudflare-opencode-terminal dengan SKILL.md, agents, references, scripts dan assets. Jangan menyimpan node_modules, state Wrangler, data backup atau secret.
-
-Validasi skill, test script dan template. Setelah commit dan push, periksa SHA branch remote dan satu berkas utama. Laporkan link repo dan commit nyata. Jangan memberi link sandbox ke berkas skill sebagai pengganti penyimpanan yang diminta.
+Penghapusan kode/config pada commit baru tidak menghapus isi riwayat lama. Jangan mengklaim seluruh sejarah bersih jika tidak diperiksa.
 
 Sumber: https://developers.cloudflare.com/workers/ci-cd/
-Sumber: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
 Sumber: https://developers.cloudflare.com/workers/configuration/versions-and-deployments/rollbacks/
 Sumber: https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions

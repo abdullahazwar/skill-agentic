@@ -10,21 +10,13 @@ Streaming cocok untuk payload besar. Batasi ukuran sebelum mem-buffer body. Teta
 
 ## Routing aset dan API
 
-    {
-      "assets": {
-        "directory": "./public",
-        "binding": "ASSETS",
-        "run_worker_first": ["/api", "/api/*", "/healthz"]
-      }
-    }
+Rancang pemisahan route API, health dan aset. Periksa jalur mana yang benar-benar menjalankan Worker agar proteksi tidak dilewati.
 
-API/health masuk Worker. Aset cocok dapat melewati jalur kode. Starter tidak memakai fallback SPA karena hanya satu halaman.
-
-Untuk SPA, tambahkan not_found_handling: single-page-application setelah menguji navigasi. Pertahankan Worker-first untuk API agar API salah tidak menjadi HTML 200. Daftarkan callback autentikasi yang harus masuk Worker.
+Untuk SPA, pilih mode fallback SPA pada konfigurasi aplikasi secara privat setelah menguji navigasi. Pertahankan Worker-first untuk API agar API salah tidak menjadi HTML 200. Daftarkan callback autentikasi yang harus masuk Worker.
 
 Jika HTML privat, pola API saja tidak cukup. Jalankan Worker pada halaman privat atau lindungi hostname dengan Access. Middleware Worker tidak melindungi aset yang disajikan langsung.
 
-Gunakan env.ASSETS.fetch(request) untuk fallback. Hindari fetch ke URL aplikasi sendiri karena dapat membuat loop.
+Gunakan binding aset yang didukung runtime untuk meneruskan request fallback. Hindari fetch ke URL aplikasi sendiri karena dapat membuat loop.
 
 | Respons | Penanganan |
 | --- | --- |
@@ -49,13 +41,11 @@ Jangan menaruh API key pada JavaScript frontend. Variabel build publik tetap ter
 
 Periksa root directory, build command, output directory, branch produksi, env, Functions dan binding. Deploy hasil build yang benar.
 
-    npx wrangler pages deploy ./dist --project-name nama-proyek
-
 Gunakan nama proyek hasil inventaris. Pisahkan preview dan produksi. Bila migrasi ke Workers, pindahkan route, redirect/header rules, assets behavior, binding, domain dan CI secara terencana.
 
 ## Pengujian
 
-Unit test starter memakai Web APIs Node. Test itu tidak membuktikan routing platform atau binding nyata. Tambahkan test runtime Workers untuk perubahan spesifik platform.
+Unit test berbasis Node tidak membuktikan routing platform atau binding nyata. Tambahkan test runtime Workers untuk perubahan spesifik platform.
 
 Uji di browser: login, input, simpan, kembali, scroll, gambar, refresh manual dan pemulihan offline. Periksa /api/typo secara langsung serta lewat fetch.
 

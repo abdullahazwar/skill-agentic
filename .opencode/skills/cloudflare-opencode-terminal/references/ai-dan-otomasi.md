@@ -4,10 +4,6 @@
 
 Tambahkan binding AI hanya jika inference diperlukan. Pilih model dari katalog saat implementasi. Jangan menjanjikan model lama masih tersedia atau kuota tetap sama.
 
-    {
-      "ai": { "binding": "AI" }
-    }
-
 Generate tipe setelah perubahan. Ikuti input/output model yang dipilih. Jangan menganggap seluruh model menerima parameter chat yang sama. Workers AI memakai layanan remote, sehingga pengujian binding dapat memakai kuota nyata.
 
 Simpan nama model sebagai konfigurasi non-secret yang jelas. Simpan key provider eksternal sebagai secret per provider. Bedakan model klasifikasi cepat, penalaran, embedding, ASR dan gambar.

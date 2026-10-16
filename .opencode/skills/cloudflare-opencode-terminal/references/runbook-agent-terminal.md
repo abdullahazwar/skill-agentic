@@ -1,60 +1,38 @@
 # Runbook agent terminal
 
-## Membuat aplikasi baru
+## Panduan, rancangan atau audit
 
-1. Tentukan folder tujuan dan kontrak fitur.
-2. Pilih starter aset paket atau generator Cloudflare resmi. Jangan menulis proyek pada folder skill.
-3. Tetapkan Worker name dan tanggal kompatibilitas.
-4. Tambahkan binding yang diperlukan. Gunakan resource lama jika memang diminta.
-5. Generate tipe, implementasi, test, build dan dry-run.
-6. Buat atau pilih resource remote hanya dalam scope.
-7. Isi secret dengan prompt resmi. Jalankan migrasi yang telah diuji.
-8. Deploy, verifikasi URL dan catat versi.
+1. Pastikan hasil yang diminta dan batas read-only.
+2. Baca aturan serta dokumen yang relevan.
+3. Kumpulkan bukti secukupnya tanpa membuka credential/data pelanggan.
+4. Jelaskan pilihan, sebab, dampak dan langkah validasi.
+5. Jangan membuat file aplikasi, konfigurasi atau perubahan akun bila pengguna hanya meminta instruksi.
 
-Jika diminta lokal saja atau rancangan saja, berhenti pada hasil itu. Jangan menambah deployment.
+## Implementasi aplikasi yang diminta terpisah
 
-## Memperbaiki proyek lama
+1. Tentukan repo aplikasi dan scope yang telah diizinkan.
+2. Baca status, kontrak dan toolchain yang ada.
+3. Rancang perubahan terkecil yang menyelesaikan masalah.
+4. Kerjakan di repo aplikasi, tanpa memasukkan identitas akun ke repo skill.
+5. Uji jalur normal, kegagalan dan regresi yang terkait.
+6. Push/deploy hanya jika termasuk scope, lalu verifikasi hasil.
 
-1. Baca aturan repo, status git dan konfigurasi produksi yang relevan.
-2. Reproduksi atau temukan bukti log tanpa membuka data privat.
-3. Identifikasi modul penyebab dan kontrak yang harus dipertahankan.
-4. Buat perubahan sekecil kebutuhan. Jangan mengganti seluruh Worker hanya karena satu handler bermasalah.
-5. Uji jalur gagal, jalur normal dan regresi yang terkait.
-6. Deploy atau push bila diminta, lalu periksa hasil remote.
+Jangan membuat aplikasi di folder paket skill. Jangan membuat resource dua kali setelah timeout tanpa memeriksa hasil operasi sebelumnya.
 
-## Memperbaiki bot idle
+## Diagnosis bot idle
 
-Bedakan invocation cron dari HTTP, outbound API dan KV/D1. Periksa handler yang memanggil AI sebelum memeriksa pekerjaan. Gunakan due query berindeks dan early return. Pertahankan pengingat yang memang diperlukan.
+Bedakan cron, request HTTP, outbound API serta operasi storage. Periksa apakah AI dipanggil sebelum ada pekerjaan. Rancang pencarian due berindeks dan berhenti ketika kosong tanpa menghapus pengingat yang diperlukan.
 
-Gunakan inbox durable dan atomic claim untuk update/job. Jangan mengakui webhook sukses sebelum menerima pekerjaan secara tahan gangguan. Uji duplicate, crash, lease dan retry.
+Tinjau durable inbox, claim atomik, retry, lease dan idempotensi. Jangan menjanjikan tepat satu kali pengiriman eksternal tanpa dukungan ujung ke ujung.
 
 ## Migrasi data
 
-Inventaris tabel, foreign key, jumlah baris dan versi. Backup privat, migrasi tambahan, uji lokal/staging, lalu apply pada environment benar. Jangan memulihkan snapshot lama secara otomatis setelah deploy kode gagal.
+Inventaris skema dan jumlah data secara privat. Siapkan backup yang sesuai, migrasi kompatibel dan uji terisolasi. Restore snapshot tidak boleh dijalankan otomatis setiap deploy gagal. Cache bukan sumber saldo/stok.
 
-Simpan keputusan penghapusan relasi. Riwayat harga penjualan perlu snapshot. Cache tidak menjadi sumber kebenaran untuk saldo atau stok.
+## Pemulihan sesi
 
-## Ketika sesi panjang
+Simpan catatan ringkas tentang tujuan, scope, perubahan, tes, bukti error dan langkah berikutnya di tempat privat yang sesuai. Jangan memasukkan credential, identitas akun atau data pelanggan ke catatan publik. Saat melanjutkan, baca status dan diff agar pekerjaan tidak diulang.
 
-Catat checkpoint ringkas dalam catatan proyek yang memang ditujukan untuk pekerjaan:
+## Pelaporan
 
-    Tujuan:
-    Scope yang telah diizinkan:
-    Repo/branch/Worker/environment:
-    Perubahan dan commit:
-    Test yang sudah lulus:
-    Bukti error yang belum selesai:
-    Langkah berikutnya:
-    Jangan ulangi:
-
-Jangan menyimpan token atau data pelanggan dalam checkpoint. Setelah compaction atau resume, baca catatan, status git dan file yang berubah. Jangan mengulang create resource yang mungkin sudah berhasil.
-
-## Headless dan exit status
-
-Opencode run menggerakkan agent, bukan menggantikan semua test. Tinjau hasil tool dan exit code. Format JSON event membantu integrasi jika CLI mendukung, tetapi struktur event dapat berubah.
-
-Jangan menganggap jawaban model "selesai" sebagai bukti deploy. Verifikasi branch SHA, deployment ID, health dan data sesuai perubahan. Untuk tindakan tidak dapat dibuktikan, tulis status belum terverifikasi.
-
-## Hasil akhir
-
-Berikan hasil konkret lebih dahulu. Sebutkan perubahan, alasan, pengujian, commit atau URL. Nyatakan blocker spesifik. Hindari laporan kronologi perintah yang panjang.
+Jawaban model “selesai” bukan bukti operasi. Laporkan perubahan dan tes yang nyata; bedakan belum dikerjakan, gagal, dan belum terverifikasi. Utamakan hasil konkret dan batas material.

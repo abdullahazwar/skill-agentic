@@ -96,7 +96,7 @@ Gunakan alat docs Cloudflare bila tersedia. Jika tidak, buka developers.cloudfla
 - https://opencode.ai/docs/commands/
 - https://opencode.ai/docs/mcp-servers/
 
-Halaman utama OpenCode diperiksa pada 17 Oktober 2026. Dokumentasi dev/v2 tidak dicampur ke template ini. Selalu periksa help lokal untuk sintaks berbeda, terutama models dan flag terminal.
+Rujuk dokumentasi utama OpenCode sesuai versi. Jangan mencampur format dokumentasi varian lain. Selalu periksa help lokal untuk sintaks berbeda, terutama models dan flag terminal.
 
 ## Catatan bukti
 

@@ -16,13 +16,6 @@ State percakapan sementara dapat memakai KV jika keterlambatan/kehilangan dapat 
 
 Pada verifikasi 17 Oktober 2026, minimum cacheTtl ialah 30 detik dan default 60 detik. Minimum expirationTtl ialah 60 detik. Periksa ulang saat dipakai. Jangan tertukar karena namanya mirip.
 
-    await env.CACHE.put("summary:v1:user:123:2026-10", JSON.stringify(summary), {
-      expirationTtl: 60
-    });
-    const cached = await env.CACHE.get("summary:v1:user:123:2026-10", {
-      type: "json"
-    });
-
 Key memakai versi, pemilik dan periode. Identitas berasal dari server. Jangan memakai satu key ringkasan untuk semua user.
 
 ## Cache-aside

@@ -28,22 +28,15 @@ Periksa apakah caching yang dipakai ialah Cache API, KV atau fitur Workers Cache
 
 ## Proyeksi
 
-Perkiraan traffic HTTP harian:
+Perkirakan traffic HTTP harian dengan mengalikan jumlah pengguna aktif, aksi per pengguna, dan request API per aksi.
 
-    user aktif × aksi per user × API request per aksi
-
-Perkiraan cron:
-
-    1.440 / interval menit
+Perkirakan tick cron dengan membagi jumlah menit dalam sehari oleh interval dalam menit.
 
 Dengan satu cron tiap lima menit, ada 288 tick per hari meskipun tidak ada jadwal. Tick tidak identik dengan request HTTP browser. Billing setiap jenis event tetap perlu diperiksa terpisah.
 
-Contoh penggunaan alat estimasi:
+Tambahkan monitor, retry, subrequest serta operasi storage ke proyeksi. Hitung secara terpisah menurut metrik billing produk.
 
-    python3 scripts/estimasi.py --users 20 --actions 15 --api-per-action 1 \
-      --cron-minutes 5 --kv-reads 1 --d1-rows-read 5 --days 30
-
-Alat mengestimasi volume. Alat tidak mengonversi ke Rupiah dan tidak menanam batas free tier. Input harus mencerminkan pola nyata. Tambahkan monitor, retry, subrequest dan operasi tick bila ada.
+Proyeksi volume bukan tagihan. Gunakan pola nyata dan harga resmi saat estimasi dibuat; jangan menanam batas free tier sebagai janji permanen.
 
 ## Urutan penghematan
 

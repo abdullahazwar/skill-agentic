@@ -56,7 +56,7 @@ Frontend dapat berada pada Worker yang sama. Database dan file tetap resource te
 
 Buat interface berdasarkan tindakan bisnis, misalnya catatTransaksi, terimaWebhook, klaimJadwalJatuhTempo. Simpan query, validasi nominal, ownership, retry dan pemetaan error di implementasinya. Inject adapter waktu, storage dan provider agar test tidak menyentuh produksi.
 
-Fetch handler langsung cukup untuk starter. Hono berguna saat routing/middleware berkembang. Hindari framework besar tanpa kebutuhan.
+Handler langsung cukup untuk aplikasi sederhana. Hono berguna saat routing/middleware berkembang. Hindari framework besar tanpa kebutuhan.
 
 ## Batas runtime
 

@@ -28,20 +28,11 @@ Layanan luar tidak otomatis mengetahui URL baru. Jangan menganggap URL lama redi
 
 Gunakan domain yang berada pada akun/zona yang benar. Pilih Custom Domain jika Worker menjadi origin. Pilih Route jika Worker memproses request menuju origin yang sudah ada. Periksa konflik DNS/route sebelum menambah record.
 
-Contoh fragmen custom domain, isi hostname sendiri:
-
-    {
-      "routes": [
-        { "pattern": "app.example.com", "custom_domain": true }
-      ]
-    }
+Tentukan custom domain pada proyek aplikasi hanya jika perubahan domain memang diminta. Jangan menerbitkan hostname akun pengguna pada repo panduan.
 
 Jangan menambahkan wildcard luas jika cukup satu hostname. Untuk produksi, pilih domain stabil sehingga perpindahan subdomain workers.dev tidak memaksa pembaruan seluruh integrasi.
 
 ## Diagnosis berurutan
-
-    nslookup app.example.com
-    curl -I --connect-timeout 10 --max-time 20 https://app.example.com/healthz
 
 | Gejala | Periksa |
 | --- | --- |

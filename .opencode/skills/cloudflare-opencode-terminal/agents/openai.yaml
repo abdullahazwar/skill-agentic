@@ -1,4 +1,0 @@
-interface:
-  display_name: "Cloudflare Agent OpenCode"
-  short_description: "Panduan Cloudflare untuk AI agent OpenCode terminal."
-  default_prompt: "Gunakan $cloudflare-opencode-terminal untuk mengerjakan proyek Cloudflare melalui terminal OpenCode, menguji perubahan, dan men-deploy sesuai instruksi."

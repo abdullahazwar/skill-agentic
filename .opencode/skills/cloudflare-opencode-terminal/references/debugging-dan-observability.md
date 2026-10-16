@@ -12,9 +12,6 @@
 
 Catat waktu dengan zona, deployment aktif, route, metode, status HTTP dan request ID. Reproduksi sekali dengan input aman. Tentukan apakah request mencapai Worker sebelum mengubah kode.
 
-    npx wrangler tail
-    npx wrangler tail --status error
-
 Gunakan environment yang benar. Log real-time bukan arsip lengkap. Sampling dapat menyembunyikan event yang tidak terpilih.
 
 ## Log
@@ -25,14 +22,7 @@ Pisahkan durasi parse, auth, database, AI dan Telegram. Untuk job, gunakan job_i
 
 Konfigurasi observability harus seimbang dengan kebutuhan dan biaya:
 
-    {
-      "observability": {
-        "enabled": true,
-        "head_sampling_rate": 1
-      }
-    }
-
-Sampling 1 ialah contoh pencatatan penuh untuk diagnosis. Evaluasi kembali setelah masalah teratasi. Periksa retensi dan biaya aktual.
+Sampling penuh dapat berguna sementara untuk diagnosis bila diizinkan. Evaluasi kembali setelah masalah teratasi. Periksa retensi dan biaya aktual.
 
 ## Diagnosis
 

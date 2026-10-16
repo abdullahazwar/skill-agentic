@@ -1,102 +1,29 @@
-# Memasang skill di OpenCode
+# Memakai skill di OpenCode
 
-## Isi
+## Isi paket
 
-- Instalasi pada repo skill-agentic
-- Instalasi global atau proyek aplikasi
-- Memulai agent
-- Memverifikasi pemuatan
-- Memperbarui paket
+Repo skill-agentic membagikan skill Markdown di direktori .opencode/skills. cloudflare-opencode-terminal dan frontend-professional merupakan folder sejajar. Setiap folder memiliki SKILL.md dan referensi tertulis. Paket tidak menyertakan installer, kode aplikasi, custom agent, command otomatis atau konfigurasi provider.
 
-## Repo skill-agentic
+## Pemasangan proyek
 
-Repo distribusi: https://github.com/abdullahazwar/skill-agentic
+Salin hanya folder skill yang diperlukan ke direktori .opencode/skills pada proyek tujuan. Pertahankan nama folder dan SKILL.md. Jangan mengganti AGENTS.md atau konfigurasi proyek yang sudah ada.
 
-Struktur yang dipakai:
+Jika skill bernama sama sudah ada, bandingkan instruksi dan gabungkan perubahan yang diperlukan secara sadar. Jangan menimpa versi pengguna. Menyalin dokumen tidak membutuhkan kredensial Cloudflare.
 
-    AGENTS.md
-    .opencode/agents/cloudflare-terminal.md
-    .opencode/commands/cf-audit.md
-    .opencode/commands/cf-implement.md
-    .opencode/commands/cf-deploy.md
-    .opencode/skills/cloudflare-opencode-terminal/SKILL.md
+## Pemasangan global
 
-Folder di bawah skill berisi references, scripts dan assets. Perintah shell dijalankan dari terminal biasa. Prompt seperti /cf-audit dijalankan di dalam TUI OpenCode.
+Menurut dokumentasi OpenCode, direktori global yang umum adalah ~/.config/opencode/skills. Lokasi bisa berbeda bila instalasi mengatur direktori konfigurasi lain. Periksa dokumentasi versi yang digunakan. Pilih satu lokasi agar tidak ada nama duplikat.
 
-## Clone dan periksa
+Tidak perlu menambahkan provider, model, API key, izin bash atau koneksi Cloudflare untuk membaca skill.
 
-    git clone https://github.com/abdullahazwar/skill-agentic.git
-    cd skill-agentic
-    opencode --version
-    opencode --help
-    python3 --version
-    node --version
+## Memulai sesi
 
-Periksa asal binary jika ada beberapa instalasi:
+Buka terminal OpenCode pada folder proyek yang dimaksud dan minta agent memuat cloudflare-opencode-terminal melalui tool skill. Minta agent membaca referensi yang relevan, bukan seluruh paket sekaligus.
 
-    command -v opencode
+Untuk belajar/audit/rancangan, sebutkan hasil itu agar agent tetap pada instruksi. Untuk implementasi aplikasi kelak, sebut repo aplikasi, perubahan yang diminta dan batas operasinya. Paket skill-agentic sendiri tidak perlu dideploy.
 
-Pada PowerShell, gunakan Get-Command opencode. Contoh Bash di panduan dapat dijalankan di Linux, macOS atau WSL. Jangan mencampurkan sintaks ekspor env Bash dengan PowerShell.
+## Jika tidak ditemukan
 
-## Pasang secara global
-
-Jalankan dari root repo skill-agentic:
-
-    python3 .opencode/skills/cloudflare-opencode-terminal/scripts/install_opencode.py --global --with-agent --with-commands
-
-Default global ialah ~/.config/opencode. Jika instalasi menggunakan lokasi khusus atau XDG_CONFIG_HOME, berikan lokasinya secara eksplisit:
-
-    python3 .opencode/skills/cloudflare-opencode-terminal/scripts/install_opencode.py --global --config-dir /lokasi/config/opencode --with-agent --with-commands
-
-Installer tidak mengubah opencode.json, AGENTS.md atau provider. Jika ada file berbeda dengan nama sama, installer berhenti sebelum menulis. Cadangkan versi lama dan pindahkan keluar direktori discovery sebelum memperbarui. Jangan mengaktifkan dua skill berbeda dengan nama sama.
-
-## Pasang pada satu aplikasi
-
-    python3 .opencode/skills/cloudflare-opencode-terminal/scripts/install_opencode.py --project /lokasi/proyek-cloudflare --with-agent --with-commands
-
-Hasilnya berada dalam .opencode milik proyek tujuan. Jalankan OpenCode dari proyek aplikasi, bukan dari repo skill-agentic jika tugasnya memperbaiki aplikasi lain.
-
-Untuk memeriksa rencana instalasi tanpa menulis:
-
-    python3 .opencode/skills/cloudflare-opencode-terminal/scripts/install_opencode.py --project /lokasi/proyek-cloudflare --with-agent --with-commands --dry-run
-
-## Memulai agent
-
-    cd /lokasi/proyek-cloudflare
-    opencode --agent cloudflare-terminal
-
-Masukkan prompt:
-
-    Muat skill cloudflare-opencode-terminal. Audit proyek ini dan laporkan temuan dengan bukti. Jangan mengubah akun Cloudflare.
-
-Untuk implementasi:
-
-    Muat skill cloudflare-opencode-terminal. Perbaiki bug yang dijelaskan, jalankan test dan dry-run. Pertahankan data dan Worker yang sudah ada.
-
-Untuk CLI non-interaktif jika help lokal mendukung:
-
-    opencode run --agent cloudflare-terminal "Muat skill cloudflare-opencode-terminal. Periksa proyek ini tanpa deploy."
-
-Jangan menganggap shell memahami simbol $skill sebagai pemanggilan skill. Pakai nama skill dalam prompt. Jangan menambahkan model tertentu jika provider/model yang dipakai belum terverifikasi.
-
-## Memverifikasi pemuatan
-
-Periksa agent melalui opencode agent list jika subcommand tersedia. Lihat opencode debug --help sebelum memakai diagnostik skill. Jika debug skill tersedia, gunakan untuk memeriksa name dan lokasi. Keberadaan file tidak membuktikan model telah memuat skill dalam sesi. Minta agent memuat skill dan menyebutkan referensi yang dipakai.
-
-Skill juga dapat dipakai lewat agent Build bawaan tanpa custom agent. Restart sesi setelah pemasangan bila discovery belum berubah.
-
-## Template Worker
-
-Salin assets/worker-starter dari base directory skill ke folder aplikasi baru. Jangan deploy folder paket skill. Setelah memilih nama Worker dan tanggal kompatibilitas:
-
-    npm ci
-    npm run types
-    npm run check
-    npm test
-    npm run build
-    npm run dev
-
-Starter memakai Node 24 untuk test TypeScript native dan menyertakan lockfile. Deployment nyata dilakukan hanya setelah diminta, dengan akun dan target yang telah diverifikasi.
+Periksa lokasi discovery, nama folder yang cocok dengan metadata name, huruf besar pada SKILL.md, nama duplikat serta permission skill yang aktif. Muat ulang sesi jika perlu. Jangan mematikan pembatasan alat atau mengganti konfigurasi global hanya untuk mengatasi discovery.
 
 Sumber: https://opencode.ai/docs/skills/
-Sumber: https://opencode.ai/docs/cli/

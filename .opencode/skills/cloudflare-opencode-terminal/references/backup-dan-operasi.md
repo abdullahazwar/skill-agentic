@@ -8,13 +8,9 @@ Pisahkan backup data pelanggan dari repo publik. Gunakan enkripsi dan penyimpana
 
 ## D1
 
-    npx wrangler d1 export nama-database --remote --output backup.sql
-
 Pastikan nama, ID dan environment benar. Catat waktu UTC, jumlah tabel/baris, versi skema dan checksum file. Periksa export selesai dan file bukan kosong.
 
 Uji restore ke database baru/staging:
-
-    npx wrangler d1 execute database-restore-uji --local --file backup.sql
 
 Untuk remote restore uji, target harus database isolasi yang secara jelas dipilih. Periksa sintaks/batas import dan jangan menimpa database produksi hanya untuk menguji.
 

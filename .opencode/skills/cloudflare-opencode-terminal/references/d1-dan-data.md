@@ -14,10 +14,6 @@ Gunakan D1 untuk data relasional. Simpan uang Rupiah sebagai integer dengan satu
 
 Gunakan ID stabil, UNIQUE, CHECK, foreign key dan indeks. Nama barang ialah label yang dapat berubah, bukan primary key.
 
-    const row = await env.DB.prepare(
-      "SELECT id, amount_rupiah FROM transactions WHERE user_id = ? AND id = ?"
-    ).bind(verifiedUserId, transactionId).first();
-
 Ambil verifiedUserId dari autentikasi server. Jangan percaya user_id client sebagai bukti kepemilikan. Bind input, batasi tanggal/halaman dan allowlist kolom ORDER BY.
 
 ## Transaksi dan konflik
@@ -46,7 +42,7 @@ Untuk read-after-write dengan read replication, pelajari Sessions API dan bookma
 
 Buat migrasi baru. Jangan mengubah file yang sudah diterapkan. Uji lokal, backup produksi, lalu apply pada database/environment yang benar.
 
-Skema assets/sql/0001_initial.sql memberi contoh users, transactions, webhook_inbox dan reminder_jobs. Ini bukan model lengkap semua bisnis.
+Rancang skema sesuai domain dan uji constraint serta kepemilikan pada data terisolasi.
 
 Uji dua akun. Pastikan edit, hapus, laporan, ekspor, job dan cache menolak akses lintas pemilik. Gunakan constraint gabungan untuk relasi lintas tenant bila diperlukan.
 
